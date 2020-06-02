@@ -1,21 +1,12 @@
-IF OBJECT_ID('dbo.RegistrationTypes', 'U') IS NOT NULL
-DROP TABLE dbo.RegistrationTypes
+IF OBJECT_ID('dbo.RegTypes', 'U') IS NOT NULL
+DROP TABLE dbo.RegTypes
 GO
 -- Create the table in the specified schema
-CREATE TABLE dbo.RegistrationTypes
+CREATE TABLE dbo.RegTypes
 (
     RegTypeID VARCHAR(3) NOT NULL PRIMARY KEY, -- primary key column
     RegistrationType VARCHAR(20) NOT NULL 
 );
-GO
-INSERT INTO RegistrationTypes
-   ([RegTypeID],[RegistrationType])
-VALUES
-   ( 001, 'Merchant'),
-   ( 002, 'Customer'),
-   ( 003, 'Admin'),
-   ( 004, 'SuperAdmin'),
-   ( 005, 'ReadOnlyUser')
 GO
 
 IF OBJECT_ID('dbo.Registrations', 'U') IS NOT NULL
@@ -26,7 +17,7 @@ CREATE TABLE dbo.Registrations
 (
     RegID VARCHAR(7) NOT NULL PRIMARY KEY, -- primary key column
     Phone_number VARCHAR(10) NOT NULL,
-    Passwd varchar(5) NOT NULL,
+    Passwd varchar(10) NOT NULL,
     RegTypeID VARCHAR(3) NOT NULL  
     -- specify more columns here
 );
@@ -39,7 +30,7 @@ GO
 CREATE TABLE dbo.Permissions
 (
     UserTypeID VARCHAR(3) NOT NULL , -- primary key column
-    UserType VARCHAR(10) NOT NULL,
+    UserType VARCHAR(20) NOT NULL,
     Updt BIT NULL,
     crt BIT NULL,
     dlt BIT NULL,
@@ -109,17 +100,15 @@ GO
 CREATE TABLE dbo.Wallet
 (
     WalletID VARCHAR(5) PRIMARY KEY NOT NULL,
-    WalletAmount MONEY,
+    WalletAmount INT,
     BankAccountNumber VARCHAR(12),
     IFSCno VARCHAR(11)
 );
 GO
 
-IF OBJECT_ID('dbo.BusinessCategory', 'U') IS NOT NULL
-DROP TABLE dbo.BusinessCategory
-GO
+
 -- Create the table in the specified schema
-CREATE TABLE dbo.BusinessCategory
+CREATE TABLE dbo.BusinessCategories
 (
     CategoryID VARCHAR(7) PRIMARY KEY NOT NULL,
     CategoryName VARCHAR(20) NOT NULL,
@@ -154,9 +143,7 @@ CREATE TABLE dbo.Transactions
 );
 GO
 
-IF OBJECT_ID('dbo.TransactionTypes', 'U') IS NOT NULL
-DROP TABLE dbo.TransactionTypes
-GO
+
 -- Create the table in the specified schema
 CREATE TABLE dbo.TransactionTypes
 (
@@ -169,8 +156,8 @@ GO
 
 
 ALTER TABLE dbo.Registrations
-   ADD CONSTRAINT FK_RegType_Reg FOREIGN KEY (RegTypeID)
-      REFERENCES dbo.RegistrationTypes (RegTypeID)
+   ADD CONSTRAINT FK_RegTypes_Reg FOREIGN KEY (RegTypeID)
+      REFERENCES dbo.RegTypes (RegTypeID)
       ON DELETE CASCADE
       ON UPDATE CASCADE
 ;
@@ -194,7 +181,7 @@ ALTER TABLE dbo.MerchantDetails
 
 ALTER TABLE dbo.BusinessSubCategory
    ADD CONSTRAINT FK_SubCat_Cat FOREIGN KEY (CategoryID)
-      REFERENCES dbo.BusinessCategory (CategoryID)
+      REFERENCES dbo.BusinessCategories (CategoryID)
       ON DELETE CASCADE
       ON UPDATE CASCADE     
 ;
@@ -208,7 +195,7 @@ ALTER TABLE dbo.MerchantDetails
 
 ALTER TABLE dbo.Permissions
    ADD CONSTRAINT FK_Permission_RegType FOREIGN KEY (UserTypeID)
-      REFERENCES dbo.RegistrationTypes (RegTypeID)
+      REFERENCES dbo.RegTypes (RegTypeID)
       ON DELETE CASCADE
       ON UPDATE CASCADE
 ;
